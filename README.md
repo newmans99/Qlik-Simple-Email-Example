@@ -33,6 +33,7 @@ This [Example Simple QWC Email Example][/example/ExampleSimpleQWCEmailExample.qv
 1. [Send Email](#section-send-email) - Actual email sending portion of example script.
 
 ### SECTION: Main
+Standard Main section with specific variables defined.
 ```
 SET ThousandSep=',';
 SET DecimalSep='.';
@@ -55,6 +56,7 @@ SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
 ```
 
 ### SECTION: Data Load
+Example data load, can be any existing load script you have.
 ```
 //Sample data load for illustration purposes only. This section is really unnecessary and should be replaced with your code.
 
@@ -91,6 +93,7 @@ Autogenerate 1000
 ```
 
 ### SECTION: Script Utilities
+Loading the URL Encoding table from w3schools to encode strings.
 ```
 //URL Encoding Mapping Load - Helps to encode the URL to avoid errors
 URL_Encoding_Reference:
@@ -102,7 +105,7 @@ FROM [https://www.w3schools.com/tags/ref_urlencode.asp]
 ```
 
 ### SECTION: Send Email
-Before loading this app, change the base url (STEP #1), SMTP Server Name (STEP #3), and message attributes (STEP #4)
+Actual email sending portion of example script. Before loading this app, change the base url (STEP #1), SMTP Server Name (STEP #3), and message attributes (STEP #4).
 ```
 // STEP 1: Change the QWC Server path
 SET vQWCBaseURL = 'http://localhost:5555/data';
@@ -137,7 +140,8 @@ FROM [$(vQWCNotification)] (qvx);
 
 ```
 
-
+## Next Steps:
+Now that you have this working and have started sending emails from your load scripts, you can see my [Qlik Proactive Email Notifications](https://github.com/newmans99/Qlik-Proactive-Email-Notification-Example) github project to provide a system to send proactive data alerts to users.
 
 ## References:
 1. Qlik Sense Install Documentation: http://help.qlik.com/en-US/sense/Subsystems/Installation/Content/InstallationLicensing/Server-Deployment-Introduction.htm
