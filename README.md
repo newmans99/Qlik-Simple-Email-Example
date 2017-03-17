@@ -26,7 +26,7 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 
 
 ## Example Application
-This [Example Simple QWC Email Example](Qlik-Simple-Email-Example/example/Example Simple QWC Email Example.qvf) has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
+This [Example Simple QWC Email Example](/example/Example Simple QWC Email Example.qvf) has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
 1. [Main](#section-main) - Standard Main section with specific variables defined.
 1. [Data Load](#section-data-load) - Example data load, can be any existing load script you have.
 1. [Script Utilities](#section-script-utilities) - Loading the URL Encoding table from w3schools to encode strings.
