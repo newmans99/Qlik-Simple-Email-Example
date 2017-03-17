@@ -12,7 +12,7 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 <ol>
 <li> Install, Configure, and License Qlik Sense or QlikView
 <ol>
-<li> For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the [Qlik Documentation][1](references).
+<li> For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the [Qlik Documentation][1](#references).
 </ol>
 <li> Install, Configure, and License Qlik Web Connectors (QWC)
 <li> Test sending an email from QWC
@@ -33,10 +33,10 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 
 ## Example Application
 This [Example Simple QWC Email Example][/example/ExampleSimpleQWCEmailExample.qvf] has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
-1. [Main](section-main) - Standard Main section with specific variables defined.
-1. [Data Load](section-data-load) - Example data load, can be any existing load script you have.
-1. [Script Utilities](section-script-utilities) - Loading the URL Encoding table from w3schools to encode strings.
-1. [Send Email](section-send-email) - Actual email sending portion of example script.
+1. [Main](#section-main) - Standard Main section with specific variables defined.
+1. [Data Load](#section-data-load) - Example data load, can be any existing load script you have.
+1. [Script Utilities](#section-script-utilities) - Loading the URL Encoding table from w3schools to encode strings.
+1. [Send Email](#section-send-email) - Actual email sending portion of example script.
 
 ### SECTION: Main
 ```
