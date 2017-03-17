@@ -26,7 +26,7 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 
 
 ## Example Application
-This [Example Simple QWC Email Example][/example/ExampleSimpleQWCEmailExample.qvf] has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
+This [Example Simple QWC Email Example][/example/Example+Simple+QWC+Email+Example.qvf] has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
 1. [Main](#section-main) - Standard Main section with specific variables defined.
 1. [Data Load](#section-data-load) - Example data load, can be any existing load script you have.
 1. [Script Utilities](#section-script-utilities) - Loading the URL Encoding table from w3schools to encode strings.
@@ -105,7 +105,7 @@ FROM [https://www.w3schools.com/tags/ref_urlencode.asp]
 ```
 
 ### SECTION: Send Email
-Actual email sending portion of example script. Before loading this app, change the base url (STEP #1), SMTP Server Name (STEP #3), and message attributes (STEP #4).
+Actual email sending portion of example script. Before loading this app, change the base url (STEP #1), SMTP Server Name (STEP #3), and message attributes (STEP #4). The SMTP server should match the one you tested in your install steps above.
 ```
 // STEP 1: Change the QWC Server path
 SET vQWCBaseURL = 'http://localhost:5555/data';
@@ -119,8 +119,8 @@ SET vQWCNotification = '$(vQWCNotification)&SMTPServer=smtp.gmail.com&useSSL=Tru
 // STEP 4: Change the following variables to affect the recipient, sender, subject, and message
 LET vSubject 	= 'Application: ' & DocumentTitle() & ' successfully loaded';
 LET vBody		= 'Application: ' & DocumentTitle() & ' (ID: ' & DocumentName() & ') successfully loaded';
-LET vTo			= 'steve.newman@qlik.com';
-LET vFrom 		= 'newmans99@gmail.com';
+LET vTo			= 'someone@someplace.com';
+LET vFrom 		= 'admin@someplace.com';
 
 
 // Encode the fields so that they get to QWC correctly, this requires the URL_Encoding_Reference ApplyMap in Script Utilities
