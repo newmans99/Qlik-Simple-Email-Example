@@ -4,7 +4,8 @@ Example of how to leverage Qlik Web Connectors to send email alerts from within 
 ## Overview
 This example uses Qlik Web Connectors (Notification) to send notifications/alerts to users. Example use cases could be to alert end users of changes in their data or to send messages to DevOps, Administrators, etc... who need to be alerted of load script/data issues.
 
-### Basic Flow Diagram
+### Basic Flow
+Load script executes (1) and sends a URL request to the Qlik Web Connector (QWC) Notification Connector (2) which sends an email through your SMTP server, which ultimately gets delivered to your user (3).
 ![Alt](/images/SimpleEmailBasicFlow.png "Qlik Email Notification Basic Flow")
 
 
