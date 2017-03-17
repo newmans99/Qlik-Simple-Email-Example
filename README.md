@@ -17,22 +17,126 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 <li> Install, Configure, and License Qlik Web Connectors (QWC)
 <li> Test sending an email from QWC
 <ol>
-<li> From the Qlik Web Connectors home page, go to the "Standards" Connectors tab then...
+<li> From the Qlik Web Connectors home page, select the "Standards" Connectors tab
 <li> Click on the "Notiication Connector"
 <li> Select "SendEmail" and select "Parameters" button
 <li> Complete the fields and select "Save Inputs & Run Table" to validate it works
-<li> This is a required in order to make sure the credentials are cached and can be used.
+<li> This is a required step in order to make sure the credentials are cached on the QWC server and can be used from within your script.
 <li> Select the Qlik Sense or QlikView tab in QWC and copy the Script.
 </ol>
-<li> Open any existing Qlik App that you want to send an email from in Qlik Sense (or QlikView).
+<li> Open any of your existing Qlik Apps that you want to send an email from in Qlik Sense (or QlikView).
 <li> Edit the load script and paste the Script you copied above.
 <li> Reload the App and check your email.
-<li> After testing is completed, you can implement in your production applications.
+<li> After testing is completed, you can implement this in your production applications.
 </ol>
 
-## Documentation
+
+## Example Application
+This [Example Simple QWC Email Example][/example/ExampleSimpleQWCEmailExample.qvf] has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application.
+
+### SECTION: Main
+```
+SET ThousandSep=',';
+SET DecimalSep='.';
+SET MoneyThousandSep=',';
+SET MoneyDecimalSep='.';
+SET MoneyFormat='$#,##0.00;($#,##0.00)';
+SET TimeFormat='h:mm:ss TT';
+SET DateFormat='M/D/YYYY';
+SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT';
+SET FirstWeekDay=6;
+SET BrokenWeeks=1;
+SET ReferenceDay=0;
+SET FirstMonthOfYear=1;
+SET CollationLocale='en-US';
+SET CreateSearchIndexOnReload=1;
+SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec';
+SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December';
+SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
+SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
+```
+
+### SECTION: Data Load
+```
+//Sample data load for illustration purposes only. This section is really unnecessary and should be replaced with your code.
+
+Characters:
+Load Chr(RecNo()+Ord('A')-1) as Alpha, RecNo() as Num autogenerate 26;
+ 
+ASCII:
+Load 
+ if(RecNo()>=65 and RecNo()<=90,RecNo()-64) as Num,
+ Chr(RecNo()) as AsciiAlpha, 
+ RecNo() as AsciiNum
+autogenerate 255
+ Where (RecNo()>=32 and RecNo()<=126) or RecNo()>=160 ;
+ 
+Transactions:
+Load
+ TransLineID, 
+ TransID,
+ mod(TransID,26)+1 as Num,
+ Pick(Ceil(3*Rand1),'A','B','C') as Dim1,
+ Pick(Ceil(6*Rand1),'a','b','c','d','e','f') as Dim2,
+ Pick(Ceil(3*Rand()),'X','Y','Z') as Dim3,
+ Round(1000*Rand()*Rand()*Rand1) as Expression1,
+ Round(  10*Rand()*Rand()*Rand1) as Expression2,
+ Round(Rand()*Rand1,0.00001) as Expression3;
+Load 
+ Rand() as Rand1,
+ IterNo() as TransLineID,
+ RecNo() as TransID
+Autogenerate 1000
+ While Rand()<=0.5 or IterNo()=1;
+
+ Comment Field Dim1 With "This is a field comment";
+```
+
+### SECTION: Script Utilities
+```
+//URL Encoding Mapping Load - Helps to encode the URL to avoid errors
+URL_Encoding_Reference:
+MAPPING LOAD
+    Replace(Character,'space',' ')	 as Character,
+	Text("From UTF-8")				         as URL_Encoding
+FROM [https://www.w3schools.com/tags/ref_urlencode.asp]
+(html, utf8, embedded labels, table is @1);
+```
+
+### SECTION: Send Email
+```
+// STEP 1: Change the QWC Server path
+SET vQWCBaseURL = 'http://localhost:5555/data';
+
+// STEP 2: Verify/Modify Notification connect string here
+SET vQWCNotification 	= '$(vQWCBaseURL)?connectorID=NotificationConnector&table=SendEmail';
+
+// STEP 3: Change the SMTP server name, after testing on QWC server and caching the credetials
+SET vQWCNotification = '$(vQWCNotification)&SMTPServer=smtp.gmail.com&useSSL=True';
+
+// STEP 4: Change the following variables to affect the recipient, sender, subject, and message
+LET vSubject 	= 'Application: ' & DocumentTitle() & ' successfully loaded';
+LET vBody		= 'Application: ' & DocumentTitle() & ' (ID: ' & DocumentName() & ') successfully loaded';
+LET vTo			= 'steve.newman@qlik.com';
+LET vFrom 		= 'newmans99@gmail.com';
 
 
+// Encode the fields so that they get to QWC correctly, this requires the URL_Encoding_Reference ApplyMap in Script Utilities
+LET vSubject 	= MapSubString('URL_Encoding_Reference','$(vSubject)');
+LET vBody 		= MapSubString('URL_Encoding_Reference','$(vBody)');
+LET vTo 		= MapSubString('URL_Encoding_Reference','$(vTo)');
+LET vFrom 		= MapSubString('URL_Encoding_Reference','$(vFrom)');
 
+SET vQWCNotification = '$(vQWCNotification)&html=True&to=$(vTo)&subject=$(vSubject)&message=$(vBody)&from=$(vFrom)&delayInSeconds=15&appID=';
 
-[1]: http://help.qlik.com/en-US/sense/Subsystems/Hub/Content/LoadData/disable-standard-mode.htm "Disable Standards Mode"
+LET vMessage = 'QWC Connection: $(vQWCNotification)';
+TRACE $(vMessage);
+
+NotificationConnector_SendEmail:
+LOAD status as SendEmail_status,result as SendEmail_result,filesattached as SendEmail_filesattached
+FROM [$(vQWCNotification)] (qvx);
+
+```
+
+#### References:
+1: Disable Standards Mode: http://help.qlik.com/en-US/sense/Subsystems/Hub/Content/LoadData/disable-standard-mode.htm
