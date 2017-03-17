@@ -9,26 +9,20 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 
 
 ## Installation & Setup
-<ol>
-<li> Install, Configure, and License Qlik Sense or QlikView [1 OR 2](#references).
-<ol>
-<li> For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the Qlik Documentation[3](#references).
-</ol>
-<li> Install, Configure, and License Qlik Web Connectors (QWC)[4](#references).
-<li> Test sending an email from QWC
-<ol>
-<li> From the Qlik Web Connectors home page, select the "Standards" Connectors tab
-<li> Click on the "Notiication Connector"
-<li> Select "SendEmail" and select "Parameters" button
-<li> Complete the fields and select "Save Inputs & Run Table" to validate it works
-<li> This is a required step in order to make sure the credentials are cached on the QWC server and can be used from within your script.
-<li> Select the Qlik Sense or QlikView tab in QWC and copy the Script.
-</ol>
-<li> Open any of your existing Qlik Apps that you want to send an email from in Qlik Sense (or QlikView).
-<li> Edit the load script and paste the Script you copied above.
-<li> Reload the App and check your email.
-<li> After testing is completed, you can implement this in your production applications.
-</ol>
+1. Install, Configure, and License Qlik Sense or QlikView [1 OR 2](#references).
+1. For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the Qlik Documentation [3](#references).
+1. Install, Configure, and License Qlik Web Connectors (QWC)[4](#references).
+1. Test sending an email from QWC
+    1. From the Qlik Web Connectors home page, select the "Standards" Connectors tab
+    1. Click on the "Notiication Connector"
+    1. Select "SendEmail" and select "Parameters" button
+    1. Complete the fields and select "Save Inputs & Run Table" to validate it works
+    1. This is a required step in order to make sure the credentials are cached on the QWC server and can be used from within your script.
+    1. Select the Qlik Sense or QlikView tab in QWC and copy the Script.
+1. Open any of your existing Qlik Apps that you want to send an email from in Qlik Sense (or QlikView).
+1. Edit the load script and paste the Script you copied above.
+1. Reload the App and check your email.
+1. After testing is completed, you can implement this in your production applications.
 
 
 ## Example Application
