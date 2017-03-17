@@ -10,11 +10,11 @@ This example uses Qlik Web Connectors (Notification) to send notifications/alert
 
 ## Installation & Setup
 <ol>
-<li> Install, Configure, and License Qlik Sense or QlikView
+<li> Install, Configure, and License Qlik Sense or QlikView [1 OR 2](#references).
 <ol>
-<li> For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the [Qlik Documentation][1](#references).
+<li> For Qlik Sense, ensure that you disable Standards Mode for the Engine by following the steps in the Qlik Documentation[3](#references).
 </ol>
-<li> Install, Configure, and License Qlik Web Connectors (QWC)
+<li> Install, Configure, and License Qlik Web Connectors (QWC)[4](#references).
 <li> Test sending an email from QWC
 <ol>
 <li> From the Qlik Web Connectors home page, select the "Standards" Connectors tab
@@ -146,6 +146,7 @@ FROM [$(vQWCNotification)] (qvx);
 
 
 ## References:
-1: Disable Standards Mode: http://help.qlik.com/en-US/sense/Subsystems/Hub/Content/LoadData/disable-standard-mode.htm
-2: QWC Install Documentation: 
-3: Qlik Sense Install Documentation: 
+1. Qlik Sense Install Documentation: http://help.qlik.com/en-US/sense/Subsystems/Installation/Content/InstallationLicensing/Server-Deployment-Introduction.htm
+1. QlikView Install Documentation: http://help.qlik.com/en-US/qlikview/Subsystems/Server/Content/QlikView%20Server/QVSRM_Install_Upgrade.htm
+1. Disable Standards Mode: http://help.qlik.com/en-US/sense/Subsystems/Hub/Content/LoadData/disable-standard-mode.htm
+1. QWC Install Documentation: http://help.qlik.com/en-US/connectors/Subsystems/Web_Connectors_help/Content/2.1/Installation/Installing-the-web-connectors.htm
