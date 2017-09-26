@@ -18,7 +18,7 @@ Load script executes (1) and sends a URL request to the Qlik Web Connector (QWC)
     1. Click on the "Notiication Connector"
     1. Select "SendEmail" and select "Parameters" button
     1. Complete the fields and select "Save Inputs & Run Table" to validate it works
-    	1. NOTE: When using gmail, you may need to add port :587 to the URL.
+    	1. NOTE: Some servers may require you to add port :587 to the URL.
     1. This is a required step in order to make sure the credentials are cached on the QWC server and can be used from within your script.
     1. Select the Qlik Sense or QlikView tab in QWC and copy the Script.
 1. Open any of your existing Qlik Apps that you want to send an email from in Qlik Sense (or QlikView).
