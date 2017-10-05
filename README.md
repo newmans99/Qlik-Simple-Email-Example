@@ -28,11 +28,11 @@ Load script executes (1) and sends a URL request to the Qlik Web Connector (QWC)
 
 
 ## Example Application
-This [Example Simple QWC Email Example](https://github.com/newmans99/Qlik-Simple-Email-Example/blob/master/example/Example%20Simple%20QWC%20Email%20Example.qvf) has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful loading of the application. This example application has the following four sections:
+This [Example Simple QWC Email Example](https://github.com/newmans99/Qlik-Simple-Email-Example/blob/master/example/Example%20Simple%20QWC%20Email%20Example.qvf) has the load script below as an example of what this could look like in your final application. In this example, an email with the application name and id can be sent to your administrator on a successful (or failure) loading of the application. This example application has the following four sections:
 1. [Main](#section-main) - Standard Main section with specific variables defined.
-1. [Data Load](#section-data-load) - Example data load, can be any existing load script you have.
-1. [Script Utilities](#section-script-utilities) - Loading the URL Encoding table from w3schools to encode strings.
-1. [Send Email](#section-send-email) - Actual email sending portion of example script.
+1. [Script Utilities](#section-script-utilities) - Loading a URL Encoding table from w3schools to encode strings and defines SendEmail() function
+1. [Data Load](#section-data-load) - Example data load, introduces errors, and calls SendEmail() function.
+
 
 ### SECTION: Main
 Standard Main section with specific variables defined.
@@ -57,43 +57,6 @@ SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
 SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
 ```
 
-### SECTION: Data Load
-Example data load, can be any existing load script you have.
-```
-//Sample data load for illustration purposes only. This section is really unnecessary and should be replaced with your code.
-
-Characters:
-Load Chr(RecNo()+Ord('A')-1) as Alpha, RecNo() as Num autogenerate 26;
- 
-ASCII:
-Load 
- if(RecNo()>=65 and RecNo()<=90,RecNo()-64) as Num,
- Chr(RecNo()) as AsciiAlpha, 
- RecNo() as AsciiNum
-autogenerate 255
- Where (RecNo()>=32 and RecNo()<=126) or RecNo()>=160 ;
- 
-Transactions:
-Load
- TransLineID, 
- TransID,
- mod(TransID,26)+1 as Num,
- Pick(Ceil(3*Rand1),'A','B','C') as Dim1,
- Pick(Ceil(6*Rand1),'a','b','c','d','e','f') as Dim2,
- Pick(Ceil(3*Rand()),'X','Y','Z') as Dim3,
- Round(1000*Rand()*Rand()*Rand1) as Expression1,
- Round(  10*Rand()*Rand()*Rand1) as Expression2,
- Round(Rand()*Rand1,0.00001) as Expression3;
-Load 
- Rand() as Rand1,
- IterNo() as TransLineID,
- RecNo() as TransID
-Autogenerate 1000
- While Rand()<=0.5 or IterNo()=1;
-
- Comment Field Dim1 With "This is a field comment";
-```
-
 ### SECTION: Script Utilities
 Loading the URL Encoding table from w3schools to encode strings.
 ```
@@ -104,41 +67,98 @@ MAPPING LOAD
 	Text("From UTF-8")				         as URL_Encoding
 FROM [https://www.w3schools.com/tags/ref_urlencode.asp]
 (html, utf8, embedded labels, table is @1);
+
+
+//SendEmail Subroutine
+Sub SendEmail(inTo, inFrom, inSubject, inBody)
+
+  // STEP 1: Change the QWC Server path
+  SET vSEQWCBaseURL = 'http://localhost:5555/data';
+
+  // STEP 2: Verify/Modify Notification connect string here
+  SET vSEQWCNotification 	= '$(vSEQWCBaseURL)?connectorID=NotificationConnector&table=SendEmail';
+
+  // STEP 3: Change the SMTP server name, after testing on QWC server and caching the credetials
+  SET vSEQWCNotification = '$(vSEQWCNotification)&SMTPServer=smtp.gmail.com%3a587&useSSL=True';
+
+
+  // Encode the fields so that they get to QWC correctly, this requires the URL_Encoding_Reference ApplyMap in Script Utilities
+  LET vSESubject	= MapSubString('URL_Encoding_Reference',inSubject);
+  LET vSEBody 	 	= MapSubString('URL_Encoding_Reference',inBody);
+  LET vSETo 	 	= MapSubString('URL_Encoding_Reference',inTo);
+  LET vSEFrom 		= MapSubString('URL_Encoding_Reference',inFrom);
+
+  SET vSEQWCNotification = '$(vSEQWCNotification)&html=True&to=$(vSETo)&from=$(vSEFrom)&subject=$(vSESubject)&message=$(vSEBody)&delayInSeconds=15&appID=';
+
+  LET vSEMessage = 'QWC Send Email Connection: $(vSEQWCNotification)';
+  TRACE $(vSEMessage);
+
+  NotificationConnector_SendEmail:
+  LOAD status as SendEmail_status,result as SendEmail_result,filesattached as SendEmail_filesattached
+  FROM [$(vSEQWCNotification)] (qvx);
+
+  //Clean up subroutine table
+  DROP TABLE NotificationConnector_SendEmail;
+
+  //Clean up subroutine variables
+  LET vSEQWCBaseURL = null();LET vSEQWCNotification = null();LET vSESubject = null();LET vSEBody = null();LET vSETo = null();LET vSEFrom = null();LET vSEMessage = null();
+
+End Sub
 ```
 
-### SECTION: Send Email
-Actual email sending portion of example script. Before loading this app, change the base url (STEP #1), SMTP Server Name (STEP #3), and message attributes (STEP #4). The SMTP server should match the one you tested in your install steps above.
+
+### SECTION: Data Load
+Example data load, and calls SendEmai() function.
 ```
-// STEP 1: Change the QWC Server path
-SET vQWCBaseURL = 'http://localhost:5555/data';
+Characters:
+Load Chr(RecNo()+Ord('A')-1) as Alpha, RecNo() as Num autogenerate 26;
 
-// STEP 2: Verify/Modify Notification connect string here (if necessary, typically is not)
-SET vQWCNotification 	= '$(vQWCBaseURL)?connectorID=NotificationConnector&table=SendEmail';
+ASCII:
+Load
+ if(RecNo()>=65 and RecNo()<=90,RecNo()-64) as Num,
+ Chr(RecNo()) as AsciiAlpha,
+ RecNo() as AsciiNum
+autogenerate 255
+ Where (RecNo()>=32 and RecNo()<=126) or RecNo()>=160 ;
 
-// STEP 3: Change the SMTP server name, after testing on QWC server and caching the credetials
-SET vQWCNotification = '$(vQWCNotification)&SMTPServer=smtp.gmail.com&useSSL=True';
+Transactions:
+Load
+ TransLineID,
+ TransID,
+ mod(TransID,26)+1 as Num,
+ Pick(Ceil(3*Rand1),'A','B','C') as Dim1,
+ Pick(Ceil(6*Rand1),'a','b','c','d','e','f') as Dim2,
+ Pick(Ceil(3*Rand()),'X','Y','Z') as Dim3,
+ Round(1000*Rand()*Rand()*Rand1) as Expression1,
+ Round(  10*Rand()*Rand()*Rand1) as Expression2,
+ Round(Rand()*Rand1,0.00001) as Expression3;
+Load
+ Rand() as Rand1,
+ IterNo() as TransLineID,
+ RecNo() as TransID
+Autogenerate 1000
+ While Rand()<=0.5 or IterNo()=1;
 
-// STEP 4: Change the following variables to affect the recipient, sender, subject, and message
-LET vSubject 	= 'Application: ' & DocumentTitle() & ' successfully loaded';
-LET vBody		= 'Application: ' & DocumentTitle() & ' (ID: ' & DocumentName() & ') successfully loaded';
+//Comment or Uncomment these three rows to trigger a Logic Error in this example.
+ ErrorMode = 0;
+bad stuff here;
+ ErrorMode =1;
+
+ Comment Field Dim1 With "This is a field comment";
+
+// STEP 4: Change the following variables/logic to affect the recipient, sender, subject, and message
 LET vTo			= 'someone@someplace.com';
 LET vFrom 		= 'admin@someplace.com';
 
+if $(ScriptErrorCount)>0 then
+  LET vSubject 	= 'Application: ' & DocumentTitle() & ' had $(ScriptErrorCount) errors during reload';
+  LET vBody		= 'Application: ' & DocumentTitle() & ' (ID: ' & DocumentName() & ') please review load script log messages.';
+else
+  LET vSubject 	= 'Application: ' & DocumentTitle() & ' successfully loaded';
+  LET vBody		= 'Application: ' & DocumentTitle() & ' (ID: ' & DocumentName() & ') successfully loaded.';
+end if  
 
-// Encode the fields so that they get to QWC correctly, this requires the URL_Encoding_Reference ApplyMap in Script Utilities
-LET vSubject 	= MapSubString('URL_Encoding_Reference','$(vSubject)');
-LET vBody 		= MapSubString('URL_Encoding_Reference','$(vBody)');
-LET vTo 		= MapSubString('URL_Encoding_Reference','$(vTo)');
-LET vFrom 		= MapSubString('URL_Encoding_Reference','$(vFrom)');
-
-SET vQWCNotification = '$(vQWCNotification)&html=True&to=$(vTo)&subject=$(vSubject)&message=$(vBody)&from=$(vFrom)&delayInSeconds=15&appID=';
-
-LET vMessage = 'QWC Connection: $(vQWCNotification)';
-TRACE $(vMessage);
-
-NotificationConnector_SendEmail:
-LOAD status as SendEmail_status,result as SendEmail_result,filesattached as SendEmail_filesattached
-FROM [$(vQWCNotification)] (qvx);
+Call SendEmail('$(vTo)', '$(vFrom)', '$(vSubject)', '$(vBody)');
 
 ```
 
